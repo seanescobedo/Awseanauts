@@ -12,6 +12,11 @@ init: function(x, y, settings) {
         }]);
     
          this.body.setVelocity(4, 18);
+         
+         this.renderable.addAnimation("idle", [78]);
+         this.renderable.addAnimation("walk", [117, 118, 119, 120, 121, 122, 123, 124, 125], 75);
+         
+         this.renderable.setCurrentAnimation("idle");
     
         //The screen(viewport) follows this character's position(pos) on both x and y axis
         me.game.viewport.follow(this.pos, me.game.viewport.AXIS.BOTH);
@@ -22,11 +27,24 @@ init: function(x, y, settings) {
             //in setVelcoity() & multiplying it by me.timer.tick
             //me.timer.tick makes smooth movements 
             this.body.vel.x += this.body.accel.x * me.timer.tick;
+            this.flipX(true);
+            
         } else {
             this.body.vel.x = 0;
         }
+        
+        if (this.body.vel.x !== 0){
+            if (!this.renderable.isCurrentAnimation("walk")) {
+                this.renderable.setCurrentAnimation("walk");
+            }
+            
+        }else {
+                this.renderable.setCurrentAnimation("idle");
+            }
      //allows the coding to actually to work
       this.body.update(delta);
+      
+      this._super(me.Entity, "update", [delta]);
       return true;
     }
 });
