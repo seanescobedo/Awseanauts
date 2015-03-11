@@ -11,6 +11,20 @@ game.PlayScreen = me.ScreenObject.extend({
                  me.game.world.addChild(player, 6);
                  
                  me.input.bindKey(me.input.KEY.RIGHT, "right");
+                 //makes character go to the right\\
+                 me.input.bindKey(me.input.KEY.LEFT, 'left');
+                //makes the character go to the left ^\\
+                me.input.bindKey(me.input.KEY.UP, 'jump');
+                //makes the character jump up ^\\
+                me.input.bindKey(me.input.KEY.Z, 'attack');
+                
+                me.input.bindKey(me.input.KEY.D, "right");
+                 //makes character go to the right\\
+                 me.input.bindKey(me.input.KEY.A, 'left');
+                //makes the character go to the left ^\\
+                me.input.bindKey(me.input.KEY.W, 'jump');
+                //makes the character jump up ^\\
+                me.input.bindKey(me.input.KEY.L, 'attack');
                  
 		// add our HUD to the game world
 		this.HUD = new game.HUD.Container();
