@@ -62,12 +62,14 @@ init: function(x, y, settings) {
         }else {
                 this.renderable.setCurrentAnimation("idle");
             }
+            
+                    me.collision.check(this, true, this.collideHandler.bind(this), true);
+            
      //allows the coding to actually to work
-      this.body.update(delta);
       if (me.input.isKeyPressed('jump')) {
             if (!this.body.jumping && !this.body.falling) {
                 // he can jump ;P\\
-                this.body.vel.y = -this.body.maxVel.y * me.timer.tick;
+                this.body.vel.y = -this.body.accel.y * me.timer.tick;
                 // set the jumping as true if you press up\\
                 this.body.jumping = true;
                 
@@ -76,25 +78,32 @@ init: function(x, y, settings) {
         }
         
          
-        me.collision.check(this, true, this.collideHandler.bind(this), true);
+
+        
+      this.body.update(delta);
       this._super(me.Entity, "update", [delta]);
       return true;
     },
     
     collideHandler: function(response) {
-        if (response.b.type === 'EnemyBaseEntiy') {
+        console.log(response.b.type);
+        if (response.b.type === 'EnemyBaseEntity') {
             //ydif & xdif is the difference in position between the player 
             //and whatever he hit so we can see if the player jumped on something
             var ydif = this.pos.y - response.b.pos.y;
             var xdif = this.pos.x - response.b.pos.x;
-            
-            console.log(" xdif " + xdif + " ydif " + ydif);
 
-            if (xdif>-35 && this.facing==='right'){
-              this.body.vel.x = 0;
-             this.pos.x = this.pos.x-1;
-            }else if(){
-                
+            if (ydif < -40 && xdif< 70 && xdif>-35) {
+                this.body.falling = false;
+                this.body.jumping = false;
+                this.body.vel.y = -1;
+            }
+           else if (xdif > -35 && this.facing === 'right' && (xdif < 0)) {
+                this.body.vel.x = 0;
+                this.pos.x = this.pos.x - 1;
+            } else if (xdif < 60 && this.facing === 'left' && (xdif > 0)) {
+                this.body.vel.x = 0;
+                this.pos.x = this.pos.x + 1;
             }
         }
     }
