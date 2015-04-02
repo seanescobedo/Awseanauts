@@ -5,7 +5,29 @@ var game = {
 	// an object where to store game information
 	data : {
 		// score
-		score : 0
+		score : 0,
+                enemyBaseHealth : 10,
+                playerBaseHealth : 10,
+                enemyCreepHealth : 5,
+                playerHealth : 10,
+                enemyCreepAttack : 1,
+                playerAttack : 1,
+                playerAttackTimer : 400,
+                enemyCreepAttackTimer : 400,
+                 // orcBaseDamage : 10,
+                 // orcBaseHealth : 100,
+                 // orcBaseSpeed : 4,
+                 // orcBaseDefense : 0,
+                playerMoveSpeed : 9,
+                creepMoveSpeed : 5,
+                gameManager : "",
+                player : "",
+                exp : 0,
+                gold : 100,
+                exp1 : 0,
+                exp2 : 0,
+                exp3 : 0,
+                exp4 : 0
 	},
 	
 	
@@ -49,6 +71,6 @@ var game = {
 		me.state.set(me.state.PLAY, new game.PlayScreen());
 
 		// Start the game.
-		me.state.change(me.state.PLAY);
+		me.state.change(me.state.MENU);
 	}
 };
