@@ -1,6 +1,23 @@
 game.PlayerEntity = me.Entity.extend({
 init: function(x, y, settings) {
-    this._super(me.Entity, 'init', [x, y, {
+        this.setSuper();
+        this.setPlayerTimers();
+        this.setAttributes();
+        this.type = "PlayerEntity";
+        this.setFlags();
+         
+         this.addAnimation();
+          
+         
+         
+         this.renderable.setCurrentAnimation("idle");
+    
+        //The screen(viewport) follows this character's position(pos) on both x and y axis
+        me.game.viewport.follow(this.pos, me.game.viewport.AXIS.BOTH);
+},
+
+        setSuper: function(){
+            this._super(me.Entity, 'init', [x, y, {
             image: "player",
             spritewidth: "64",
             spriteheight: "64",
@@ -10,26 +27,32 @@ init: function(x, y, settings) {
                 return (new me.Rect(0, 0, 64, 64)).toPolygon();
             }
         }]);
-         this.type = "PlayerEntity"; 
-         this.health = game.data.playerHealth;
-         this.body.setVelocity(game.data.playerMoveSpeed, 18);
-         //keeps track of which direction your charatcer is going
-         this.facing = "right";
-         this.now = new Date().getTime();
-         this.lastHit = this.now;
-         this.dead = false;
-         this.attack = game.data.playerAttack;
-         this.lastAttack = new Date().getTime();
-         
-         this.renderable.addAnimation("idle", [78]);
-         this.renderable.addAnimation("walk", [117, 118, 119, 120, 121, 122, 123, 124, 125], 75);
-         this.renderable.addAnimation("attack", [65, 66, 67, 68, 69, 70, 71, 72], 75);
-         
-         this.renderable.setCurrentAnimation("idle");
-    
-        //The screen(viewport) follows this character's position(pos) on both x and y axis
-        me.game.viewport.follow(this.pos, me.game.viewport.AXIS.BOTH);
-},
+        },
+       
+        setPlayerTimers: function(){
+            this.now = new Date().getTime();
+            this.lastHit = this.now;
+            this.lastAttack = new Date().getTime(); //hasnt been used yet
+        },
+        
+        setAttributes: function(){
+            this.health = game.data.playerHealth;
+            this.body.setVelocity(game.data.playerMoveSpeed, 18);
+            this.attack = game.data.playerAttack;
+        },
+        
+        setFlags: function(){
+          //keeps track of which direction your charatcer is going
+           this.facing = "right";
+           this.dead = false;  
+        },
+        
+        addAnimation: function(){
+            this.renderable.addAnimation("idle", [78]);
+            this.renderable.addAnimation("walk", [117, 118, 119, 120, 121, 122, 123, 124, 125], 75);
+            this.renderable.addAnimation("attack", [65, 66, 67, 68, 69, 70, 71, 72], 75);
+        },
+       
         update: function(delta) {
             this.now = new Date().getTime();
             
