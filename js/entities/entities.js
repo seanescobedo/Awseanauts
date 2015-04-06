@@ -56,26 +56,11 @@ init: function(x, y, settings) {
         update: function(delta) {
             this.now = new Date().getTime();
             
-            if(this.health <= 0){
-                this.dead = true;
-            }
+            this.dead = checkIfDead();
             
-        if (me.input.isKeyPressed("right")) {
-            //makes the position of x by adding velocity above 
-            //in setVelcoity() & multiplying it by me.timer.tick
-            //me.timer.tick makes smooth movements 
-            this.body.vel.x += this.body.accel.x * me.timer.tick;
-            this.flipX(true);
-            this.facing = "right";
-            }   else if (me.input.isKeyPressed('left')) {
-                this.facing = "left";
-            // this flips the image around\\
-            this.flipX(false);
-            this.body.vel.x -= this.body.accel.x * me.timer.tick;
-        } else {
-            this.body.vel.x = 0;
-        }
-        
+            this.checkKeyPressesAndMove();
+            
+
         if (me.input.isKeyPressed('attack')) {
             if (!this.renderable.isCurrentAnimation("attack")) {
                 console.log(!this.renderable.isCurrentAnimation("attack"));
@@ -100,8 +85,39 @@ init: function(x, y, settings) {
             
                     me.collision.check(this, true, this.collideHandler.bind(this), true);
             
-     //allows the coding to actually to work
-      if (me.input.isKeyPressed('jump')) {
+                     //allows the coding to actually to work
+      
+        
+     
+      this.body.update(delta);
+      this._super(me.Entity, "update", [delta]);
+      return true;
+    },
+    
+      checkIfDead: function(){
+        if(this.health <= 0){
+                return true;
+            }  
+            return false;
+      },
+      
+      checkKeyPressesAndMove: function(){
+          if (me.input.isKeyPressed("right")) {
+            //makes the position of x by adding velocity above 
+            //in setVelcoity() & multiplying it by me.timer.tick
+            //me.timer.tick makes smooth movements 
+            this.body.vel.x += this.body.accel.x * me.timer.tick;
+            this.flipX(true);
+            this.facing = "right";
+            }   else if (me.input.isKeyPressed('left')) {
+                this.facing = "left";
+            // this flips the image around\\
+            this.flipX(false);
+            this.body.vel.x -= this.body.accel.x * me.timer.tick;
+        } else {
+            this.body.vel.x = 0;
+        }
+        if (me.input.isKeyPressed('jump')) {
             if (!this.body.jumping && !this.body.falling) {
                 // he can jump ;P\\
                 this.body.vel.y = -this.body.accel.y * me.timer.tick;
@@ -111,12 +127,7 @@ init: function(x, y, settings) {
             }
   
         }
-        
-     
-      this.body.update(delta);
-      this._super(me.Entity, "update", [delta]);
-      return true;
-    },
+      },
         
         loseHealth: function(damage){
             this.health = this.health - damage;
