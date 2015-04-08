@@ -1,6 +1,6 @@
 game.PlayerEntity = me.Entity.extend({
 init: function(x, y, settings) {
-        this.setSuper();
+        this.setSuper(x, y);
         this.setPlayerTimers();
         this.setAttributes();
         this.type = "PlayerEntity";
@@ -15,8 +15,12 @@ init: function(x, y, settings) {
         //The screen(viewport) follows this character's position(pos) on both x and y axis
         me.game.viewport.follow(this.pos, me.game.viewport.AXIS.BOTH);
 },
-
-        setSuper: function(){
+    /*
+     *$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+     *--------------------------- Da Sets ------------------------------
+     *$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+     */
+        setSuper: function(x, y){
             this._super(me.Entity, 'init', [x, y, {
             image: "player",
             spritewidth: "64",
@@ -28,7 +32,7 @@ init: function(x, y, settings) {
             }
         }]);
         },
-       
+    
         setPlayerTimers: function(){
             this.now = new Date().getTime();
             this.lastHit = this.now;
@@ -45,23 +49,11 @@ init: function(x, y, settings) {
           //keeps track of which direction your charatcer is going
            this.facing = "right";
            this.dead = false;  
+           this.attacking = false;
         },
         
-        addAnimation: function(){
-            this.renderable.addAnimation("idle", [78]);
-            this.renderable.addAnimation("walk", [117, 118, 119, 120, 121, 122, 123, 124, 125], 75);
-            this.renderable.addAnimation("attack", [65, 66, 67, 68, 69, 70, 71, 72], 75);
-        },
-       
-        update: function(delta) {
-            this.now = new Date().getTime();
-            
-            this.dead = checkIfDead();
-            
-            this.checkKeyPressesAndMove();
-            
-
-        if (me.input.isKeyPressed('attack')) {
+        setAnimation:  function(){
+          if (this.attacking) {
             if (!this.renderable.isCurrentAnimation("attack")) {
                 console.log(!this.renderable.isCurrentAnimation("attack"));
                 //sets the current animation to attack and once that is over
@@ -82,26 +74,40 @@ init: function(x, y, settings) {
         }else if(!this.renderable.isCurrentAnimation("attack")) {
                 this.renderable.setCurrentAnimation("idle");
             }
-            
-                    me.collision.check(this, true, this.collideHandler.bind(this), true);
-            
-                     //allows the coding to actually to work
-      
-        
-     
-      this.body.update(delta);
-      this._super(me.Entity, "update", [delta]);
-      return true;
+      }, 
+     /*
+     *$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+     *--------------------------- Ups Of Da Dates ------------------------------
+     *$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+     */
+        update: function(delta) {
+            this.now = new Date().getTime();
+
+        this.dead = this.checkIfDead();
+
+        this.checkKeyPressesAndMove();
+
+        this.setAnimation();
+
+        me.collision.check(this, true, this.collideHandler.bind(this), true);
+
+        this.body.update(delta);
+        this._super(me.Entity, "update", [delta]);
+        return true;
     },
-    
-      checkIfDead: function(){
+    /*
+     *$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+     *--------------------------- Da Checks ------------------------------
+     *$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+     */
+        checkIfDead: function(){
         if(this.health <= 0){
                 return true;
             }  
             return false;
       },
       
-      checkKeyPressesAndMove: function(){
+        checkKeyPressesAndMove: function(){
           if (me.input.isKeyPressed("right")) {
             //makes the position of x by adding velocity above 
             //in setVelcoity() & multiplying it by me.timer.tick
@@ -127,17 +133,27 @@ init: function(x, y, settings) {
             }
   
         }
+        this.attacking = me.input.isKeyPressed("attack");
       },
-        
-        loseHealth: function(damage){
-            this.health = this.health - damage;
-            console.log(this.health);
-        },
-        
-    collideHandler: function(response) {
+     /*
+     *$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+     *--------------------------- Da Collides ------------------------------
+     *$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+     */
+      collideHandler: function(response) {
         console.log(response.b.type);
         if (response.b.type === 'EnemyBaseEntity') {
-            //ydif & xdif is the difference in position between the player 
+           this.collideWithEnemyBase(response);
+            
+        }else if(response.b.type==='EnemyCreep'){
+           this.collideWithEnemyCreep(response);
+        }
+            
+        
+    },
+    
+      collideWithEnemyBase: function(response){
+         //ydif & xdif is the difference in position between the player 
             //and whatever he hit so we can see if the player jumped on something
             var ydif = this.pos.y - response.b.pos.y;
             var xdif = this.pos.x - response.b.pos.x;
@@ -168,32 +184,70 @@ init: function(x, y, settings) {
                 response.b.loseHealth();
             }
             
-        }else if(response.b.type==='EnemyCreep'){
-            var xdif = this.pos.x - response.b.pos.x;
+    },
+    
+      collideWithEnemyCreep: function(response){
+         var xdif = this.pos.x - response.b.pos.x;
             var ydif = this.pos.y - response.b.pos.y;
             
-            if (xdif>0){
-                //this.pos.x = this.pos.x + 1;
+            this.stopMovement(xdif);
+            
+            if(this.checkAttack(xdif, ydif)){
+                this.hitCreep(response);
+            };
+            
+            
+    },
+    /*
+     *$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+     *--------------------------- Da Actions ------------------------------
+     *$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+     */
+      stopMovement: function(xdif){
+        if (xdif>0){
+              
                 if(this.facing==="left"){
                     this.body.vel.x = 0;
                 }
             }else{
-                  //this.pos.x = this.pos.x - 1;
+                  
                   if(this.facing==="right"){
                     this.body.vel.x = 0;
                 }
             }
             
-            if(this.renderable.isCurrentAnimation("attack") && this.now-this.lastHit >= game.data.playerAttackTimer
-                  && (Math.abs(ydif) <= 40) && 
-                  (((xdif>0) && this.facing==="left") || ((xdif<0) && this.facing==="right"))
-                  ){
-                this.lastHit = this.now;
-                response.b.loseHealth(1);
-            }
+    },
+    
+      checkAttack: function(xdif, ydif){
+        if (this.renderable.isCurrentAnimation("attack") && this.now - this.lastHit >= game.data.playerAttackTimer
+                && (Math.abs(ydif) <= 40) &&
+                (((xdif > 0) && this.facing === "left") || ((xdif < 0) && this.facing === "right"))
+                ) {
+            this.lastHit = this.now;
+            return true;
         }
-            
+            return false;
+    },
+    
+      addAnimation: function(){
+            this.renderable.addAnimation("idle", [78]);
+            this.renderable.addAnimation("walk", [117, 118, 119, 120, 121, 122, 123, 124, 125], 75);
+            this.renderable.addAnimation("attack", [65, 66, 67, 68, 69, 70, 71, 72], 75);
+        },
         
-    }
+      hitCreep: function(response){
+        if (response.b.health <= game.data.playerAttack) {
+                //adds 10 gold for a creep kill
+                game.data.gold += 10;
+                console.log("Current gold: " + game.data.gold);
+            }
+            response.b.loseHealth(game.data.playerAttack);
+    },
+    
+      loseHealth: function(damage){
+            this.health = this.health - damage;
+            console.log(this.health);
+        }
+        
 });
 
