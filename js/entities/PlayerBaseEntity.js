@@ -26,6 +26,7 @@ init: function(x, y, settings) {
     update:function(delta){
         if(this.health<=0){
             this.broken = true;
+            game.data.win = false;
            this.renderable.setCurrentAnimation("broken");
         }
         this.body.update(delta);
