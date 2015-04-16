@@ -72,7 +72,7 @@ game.ExperienceManager = Object.extend({
         if(win){
             game.data.exp += 100;
         }else{
-            game.data.exp += 10;
+            game.data.exp += 1;
         }
             
            this.gameover = true;
