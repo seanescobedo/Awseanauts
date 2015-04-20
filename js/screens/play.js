@@ -22,6 +22,12 @@ game.PlayScreen = me.ScreenObject.extend({
                  var experienceManager = me.pool.pull("experienceManager", 0, 0, {});
                  me.game.world.addChild(experienceManager, 0);
                  
+                 me.input.bindKey(me.input.KEY.B, "buy");
+                 
+                 me.input.bindKey(me.input.KEY.CAPSLOCK, "skill1");
+                 me.input.bindKey(me.input.KEY.TAB, "skill2");
+                 me.input.bindKey(me.input.KEY.SHIFT, "skill3");
+                 
                  me.input.bindKey(me.input.KEY.RIGHT, "right");
                  //makes character go to the right\\
                  me.input.bindKey(me.input.KEY.LEFT, 'left');

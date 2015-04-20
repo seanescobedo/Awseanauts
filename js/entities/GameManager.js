@@ -22,7 +22,7 @@ game.GameTimerManager = Object.extend({
      */
    goldTimerCheck: function(){
         if (Math.round(this.now / 1000) % 12 === 0 && (this.now - this.lastCreep >= 1000)) {
-            game.data.gold += 10;
+            game.data.gold += (game.data.exp1 + 1);
             console.log("Current gold: " + game.data.gold);
         }
         
@@ -82,4 +82,17 @@ game.ExperienceManager = Object.extend({
     }
     
    
+});
+
+game.SpendGold = Object.extend({
+    init:  function(x, y, settings){
+      this.now = new Date().getTime();
+        this.lastBuy = new Date().getTime();
+        this.paused = false;
+        this.alwaysUpdate = true;
+    }, 
+    
+    update: function(){
+        return true;
+    }
 });
