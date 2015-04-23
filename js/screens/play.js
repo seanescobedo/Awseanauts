@@ -26,7 +26,6 @@ game.PlayScreen = me.ScreenObject.extend({
                  me.game.world.addChild(spendGold, 0);
                  
                  me.input.bindKey(me.input.KEY.B, "buy");
-                 
                  me.input.bindKey(me.input.KEY.CAPSLOCK, "skill1");
                  me.input.bindKey(me.input.KEY.TAB, "skill2");
                  me.input.bindKey(me.input.KEY.SHIFT, "skill3");
