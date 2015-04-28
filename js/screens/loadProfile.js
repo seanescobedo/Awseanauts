@@ -1,9 +1,9 @@
-game.NewProfile = me.ScreenObject.extend({
+game.LoadProfile = me.ScreenObject.extend({
 	/**	
 	 *  action to perform on state change
 	 */
 	onResetEvent: function() {	
-		me.game.world.addChild(new me.Sprite(0, 0, me.loader.getImage('new-screen')), -10); 
+		me.game.world.addChild(new me.Sprite(0, 0, me.loader.getImage('load-screen')), -10); 
                     
                     me.input.unbindKey(me.input.KEY.B);
                     me.input.unbindKey(me.input.KEY.Z);
@@ -20,7 +20,7 @@ game.NewProfile = me.ScreenObject.extend({
                    },
                    
                    draw: function(renderer){
-                       this.font.draw(renderer.getContext(), "Pick Yo Username & Passwords", 350, 190);
+                       this.font.draw(renderer.getContext(), "Sign In Rellie", 350, 190);
                        
                    }
                    
