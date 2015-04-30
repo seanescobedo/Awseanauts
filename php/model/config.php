@@ -3,12 +3,12 @@
     session_start();
     session_regenerate_id(true);
     
-    $path = "/Seans-Blog/";
+    $path = "/Awseanauts/php";
     
     $host = "localhost";
     $username = "root";
     $password = "root";
-    $database = "blog_db";
+    $database = "Awseanauts_db";
     
     if(!isset($_SESSION["connection"])) {
         $connection = new Database($host, $username, $password, $database);
